@@ -13,7 +13,7 @@ const errorMessage = document.getElementById('error-message');
 const emptyState = document.getElementById('empty-state');
 const refreshBtn = document.getElementById('refresh-btn');
 const retryBtn = document.getElementById('retry-btn');
-const themeToggle = document.getElementById('theme-toggle');
+const themeCheckbox = document.getElementById('theme-checkbox');
 const searchInput = document.getElementById('search-input');
 const clearSearchBtn = document.getElementById('clear-search');
 const cacheIndicator = document.getElementById('cache-indicator');
@@ -40,9 +40,7 @@ const charCounter = document.getElementById('char-counter');
 const hashtagChips = document.querySelectorAll('.hashtag-chip');
 const tweetSubmitBtn = document.getElementById('tweet-submit-btn');
 
-// Theme Switcher Icons
-const sunIcon = document.querySelector('.sun-icon');
-const moonIcon = document.querySelector('.moon-icon');
+// Theme Checkbox element
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', () => {
@@ -58,16 +56,15 @@ function initTheme() {
 }
 
 function setTheme(theme) {
+    const themeCheckbox = document.getElementById('theme-checkbox');
     if (theme === 'light') {
         document.body.classList.remove('dark-theme');
         document.body.classList.add('light-theme');
-        sunIcon.style.display = 'none';
-        moonIcon.style.display = 'block';
+        if (themeCheckbox) themeCheckbox.checked = true;
     } else {
         document.body.classList.remove('light-theme');
         document.body.classList.add('dark-theme');
-        sunIcon.style.display = 'block';
-        moonIcon.style.display = 'none';
+        if (themeCheckbox) themeCheckbox.checked = false;
     }
     localStorage.setItem('theme', theme);
 }
@@ -378,8 +375,12 @@ function setupEventListeners() {
     refreshBtn.addEventListener('click', () => loadReleases(true));
     retryBtn.addEventListener('click', () => loadReleases(true));
     
-    // Theme toggle
-    themeToggle.addEventListener('click', toggleTheme);
+    // Theme toggle checkbox
+    if (themeCheckbox) {
+        themeCheckbox.addEventListener('change', () => {
+            setTheme(themeCheckbox.checked ? 'light' : 'dark');
+        });
+    }
     
     // Search input
     searchInput.addEventListener('input', (e) => {
