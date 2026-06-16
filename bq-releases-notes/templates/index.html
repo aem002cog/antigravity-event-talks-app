@@ -121,7 +121,15 @@
             <div class="feed-section">
                 <div class="feed-header">
                     <h2 id="feed-title">Latest Updates</h2>
-                    <span id="cache-indicator" class="cache-badge" style="display:none;">Cached</span>
+                    <div class="feed-header-actions">
+                        <button id="export-csv-btn" class="btn btn-secondary" title="Export current list to CSV" style="padding: 0.45rem 0.85rem; font-size: 0.75rem; gap: 0.35rem; border-radius: 8px;">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                            </svg>
+                            <span>Export CSV</span>
+                        </button>
+                        <span id="cache-indicator" class="cache-badge" style="display:none;">Cached</span>
+                    </div>
                 </div>
                 
                 <div id="loading-state" class="loading-container">

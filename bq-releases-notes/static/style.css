@@ -388,6 +388,12 @@ body {
     padding-bottom: 0.25rem;
 }
 
+.feed-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .feed-header h2 {
     font-family: 'Outfit', sans-serif;
     font-size: 1.25rem;

@@ -208,6 +208,13 @@ function renderFeed() {
                     </svg>
                     <span>${selectedReleaseId === item.id ? 'Selected' : 'Select'}</span>
                 </button>
+                <button class="card-btn btn-copy" onclick="event.stopPropagation(); copyCardText('${item.id}', this)" title="Copy release note text">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                </button>
                 <button class="card-btn btn-tweet" onclick="event.stopPropagation(); tweetImmediately('${item.id}')">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -449,6 +456,12 @@ function setupEventListeners() {
             openTwitterWebIntent(text);
         }
     });
+
+    // Export CSV button
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', exportToCSV);
+    }
 }
 
 // Styling sync between widgets and chips
@@ -461,4 +474,62 @@ function alignStatCardBorder(filterType) {
             card.classList.remove('active');
         }
     });
+}
+
+// Copy Card Text to Clipboard
+function copyCardText(id, btnElement) {
+    const item = releases.find(r => r.id === id);
+    if (!item) return;
+    
+    const textToCopy = `Google BigQuery Update [${item.date}] - ${item.type}:\n${item.text}\n\nSource: ${item.link}`;
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        // Success feedback
+        const span = btnElement.querySelector('span');
+        const originalText = span.textContent;
+        span.textContent = 'Copied!';
+        btnElement.style.borderColor = 'var(--feature-color)';
+        btnElement.style.color = 'var(--feature-color)';
+        
+        setTimeout(() => {
+            span.textContent = originalText;
+            btnElement.style.borderColor = '';
+            btnElement.style.color = '';
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+    });
+}
+
+// Export Filtered Releases to CSV
+function exportToCSV() {
+    if (filteredReleases.length === 0) {
+        alert('No data available to export.');
+        return;
+    }
+    
+    const headers = ['Date', 'Type', 'Description', 'Link'];
+    const rows = filteredReleases.map(r => [
+        r.date,
+        r.type,
+        r.text,
+        r.link
+    ]);
+    
+    // Convert to CSV string, double escaping quotes
+    let csvContent = headers.map(h => `"${h.replace(/"/g, '""')}"`).join(',') + '\n';
+    rows.forEach(row => {
+        csvContent += row.map(val => `"${val.replace(/"/g, '""')}"`).join(',') + '\n';
+    });
+    
+    // Trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `bigquery_release_notes_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
